@@ -1,3 +1,28 @@
+macro_rules! bit_map {
+    ($func:ident<$map:ident>($it:ident,$il:expr) -> $ot:ident) => {
+        fn $func(input: $it) -> $ot {
+            let mut output = 0 as $ot;
+            // iterate left-to-right over map
+            for (i, b) in $map.iter().enumerate() {
+                //add input bit mapped by $map to output
+                output += (input as $ot >> ($il - 1 - (b - 1))) & 1;
+
+                //shift output left for next bit
+                if i != $map.len() - 1 {
+                    output <<= 1;
+                }
+            }
+            output
+        }
+    };
+}
+
+#[cfg(feature = "key_recovery")]
+pub mod key_recovery;
+
+#[cfg(feature = "subkey_recovery")]
+pub mod subkey_recovery;
+
 const IP: [usize; 64] = [
     58, 50, 42, 34, 26, 18, 10, 2, 60, 52, 44, 36, 28, 20, 12, 4, 62, 54, 46, 38, 30, 22, 14, 6,
     64, 56, 48, 40, 32, 24, 16, 8, 57, 49, 41, 33, 25, 17, 9, 1, 59, 51, 43, 35, 27, 19, 11, 3, 61,
@@ -196,24 +221,6 @@ fn feistel_round(l: u32, r: u32, key: U48) -> (u32, u32) {
     (r, f_out ^ l)
 }
 
-macro_rules! bit_map {
-    ($func:ident<$map:ident>($it:ident,$il:expr) -> $ot:ident) => {
-        fn $func(input: $it) -> $ot {
-            let mut output = 0 as $ot;
-            // iterate left-to-right over map
-            for (i, b) in $map.iter().enumerate() {
-                //add input bit mapped by $map to output
-                output += (input as $ot >> ($il - 1 - (b - 1))) & 1;
-
-                //shift output left for next bit
-                if i != $map.len() - 1 {
-                    output <<= 1;
-                }
-            }
-            output
-        }
-    };
-}
 bit_map!(expand<E>(u32, 32)->U48);
 bit_map!(permutate<P>(u32, 32)->u32);
 bit_map!(input_permutate<IP>(u64, 64)->u64);
