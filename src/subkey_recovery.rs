@@ -23,7 +23,6 @@ pub fn subkey_candidates(x: u64, y: u64) -> BTreeSet<u64> {
         *s_options = s_box_inputs(s as usize, s_input);
     }
 
-    let max: u64 = s_options.iter().map(|x| x.len() as u64).max().unwrap();
     let mut key_candidates: BTreeSet<u64> = BTreeSet::new();
     for s8 in 0..s_options[7].len() {
         for s7 in 0..s_options[6].len() {
